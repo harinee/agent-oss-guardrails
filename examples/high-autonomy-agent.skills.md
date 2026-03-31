@@ -53,7 +53,7 @@ packaged/strict-agent-high-autonomy.skills.md
 With this configuration, the agent will:
 
 **Dependency selection:**
-- ✗ Avoid newly published packages (< 6 months)
+- ✗ Avoid newly published packages (< 3 months)
 - ✗ Avoid packages from unverified publishers
 - ✗ Avoid single-maintainer packages in critical paths
 - ✓ Require explicit approval for new frameworks
@@ -94,7 +94,7 @@ With this configuration, the agent will:
 Agent behavior:
 1. Checks library maintenance status
 2. Verifies library is from Maven Central
-3. Checks if library is > 6 months old
+3. Checks if library is > 3 months old
 4. Reviews security advisories
 5. Explains why library is needed and alternatives considered
 6. **Waits for explicit approval** due to strict mode

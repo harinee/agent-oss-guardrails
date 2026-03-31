@@ -112,7 +112,7 @@ If the agent encounters these signals, it should:
 
 **Good**:
 ```markdown
-- prefer packages with commits in the last 6 months
+- prefer packages with commits in the last 3 months
 - avoid packages from unverified publishers
 - pin to specific semantic versions (e.g., 1.2.3 not ^1.2.0)
 ```

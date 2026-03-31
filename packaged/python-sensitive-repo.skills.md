@@ -14,7 +14,7 @@ For Python projects in regulated or sensitive environments.
 
 ## Core principles
 
-- avoid newly published packages (less than 6 months old) unless well-justified
+- avoid newly published packages (less than 3 months old) unless well-justified
 - avoid packages with single maintainer in critical dependency path
 - pin to exact versions with no flexibility
 - require all dependencies in manifest files with no exceptions

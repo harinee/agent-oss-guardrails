@@ -10,7 +10,7 @@ Apply this to projects with elevated security requirements, production systems, 
 
 ### Dependency selection (strict)
 
-- avoid newly published packages (less than 6 months old) unless well-justified
+- avoid newly published packages (less than 3 months old) unless well-justified
 - avoid packages with single maintainer in critical dependency path
 - avoid packages with unclear or inactive maintenance
 - prefer packages with established security response processes
@@ -62,7 +62,7 @@ Apply this to projects with elevated security requirements, production systems, 
 ### Risk awareness (strict)
 
 Require explicit approval before using:
-- packages published within the last 6 months
+- packages published within the last 3 months
 - packages with fewer than 100 stars/downloads (adjust threshold by ecosystem)
 - packages from single maintainers in critical paths
 - packages with no security policy or disclosure process
@@ -97,7 +97,7 @@ When adding dependencies:
 
 Require explicit user approval before proceeding if:
 
-- Package published within last 6 months
+- Package published within last 3 months
 - Package has single maintainer
 - Package from unverified publisher
 - Package requires elevated privileges
