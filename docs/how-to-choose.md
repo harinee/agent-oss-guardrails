@@ -1,136 +1,233 @@
-# How to Choose
+# 🗺️ How to Choose
 
-This guide helps you select the right combination of skills files for your project and agent configuration.
+> A practical guide to selecting the perfect combination of guardrails for your project
 
-## Decision tree
+---
 
-### Step 1: Start with a foundation
+## 🎯 Quick Decision
 
-Every project should begin with one foundational skills file:
+1. **Production system?** → Use **strict** foundation
+2. **Prototype/experiment?** → Use **baseline** foundation
+3. **What language?** → Add ecosystem overlay
+4. **Can agent install packages?** → Add capability overlays
+5. **Risk tolerance?** → Add context overlay
 
-**For most projects:**
-```
-skills/foundational/oss-selection-baseline.skills.md
-```
+---
 
-**For sensitive or production-critical projects:**
-```
-skills/foundational/oss-selection-strict.skills.md
-```
+## 📋 5-Step Selection Process
 
-### Step 2: Add capability overlays
+### Step 1: Choose Your Foundation 🏗️
 
-Add overlays based on what your agent can do:
+Pick **exactly one** foundation:
 
-| If your agent can... | Add this overlay |
-|---------------------|------------------|
-| Install packages directly | `skills/overlays/capabilities/agent-can-install-packages.skills.md` |
-| Run shell commands | `skills/overlays/capabilities/agent-can-run-shell.skills.md` |
-| Use tools or MCP servers | `skills/overlays/capabilities/agent-can-use-tools-or-mcp.skills.md` |
-| Create or update PRs automatically | `skills/overlays/capabilities/agent-can-open-pr.skills.md` |
+| Foundation | Best For | Files |
+|-----------|----------|-------|
+| ⚖️ **Baseline** | General dev, internal tools, prototypes, lower-risk apps | `oss-selection-baseline.skills.md` |
+| 🔒 **Strict** | Production, sensitive data, regulated industries, customer-facing | `oss-selection-strict.skills.md` |
 
-### Step 3: Add ecosystem overlays
+**💡 Tip:** Start with **baseline**, upgrade to **strict** if needed.
 
-Add overlays based on your project's language and package manager:
+---
 
-| Ecosystem | Add this overlay |
-|-----------|------------------|
-| Node.js / npm / yarn | `skills/overlays/ecosystems/npm-node.skills.md` |
-| Python / pip / poetry | `skills/overlays/ecosystems/python-pip.skills.md` |
-| Java / Maven / Gradle | `skills/overlays/ecosystems/java-maven-gradle.skills.md` |
-| Container images | `skills/overlays/ecosystems/container-images.skills.md` |
+### Step 2: Add Capability Overlays 🎯
 
-### Step 4: Add artifact type overlays
+Add based on what your agent can do:
 
-Add overlays based on the types of dependencies and tools your project uses:
+| If Agent Can... | Add Overlay |
+|----------------|-------------|
+| 📦 Install packages | `agent-can-install-packages` |
+| 💻 Run shell commands | `agent-can-run-shell` |
+| 🔧 Use tools/MCP | `agent-can-use-tools-or-mcp` |
+| 🔀 Create PRs | `agent-can-open-pr` |
 
-| Artifact type | Add this overlay |
-|--------------|------------------|
-| CI/CD actions and build tools | `skills/overlays/artifact-types/ci-actions-build-tools.skills.md` |
-| Security scanners and analysis tools | `skills/overlays/artifact-types/scanners-security-tools.skills.md` |
-| MCP servers and connectors | `skills/overlays/artifact-types/mcp-servers-connectors.skills.md` |
+**Example:**
+- Low autonomy (suggests only) → No overlays
+- Medium autonomy (installs) → `+ agent-can-install-packages`
+- High autonomy (all) → Add all applicable overlays
 
-### Step 5: Add context overlays
+---
 
-Add overlays based on your project's risk profile:
+### Step 3: Add Ecosystem Overlays 🎨
 
-| Context | Add this overlay |
-|---------|------------------|
-| Prototype or low-risk experimentation | `skills/overlays/contexts/prototype-low-risk.skills.md` |
-| Production systems | `skills/overlays/contexts/production.skills.md` |
-| Regulated or sensitive environments | `skills/overlays/contexts/regulated-sensitive.skills.md` |
+Add for each ecosystem you use (can include multiple):
 
-## Example combinations
+| Project Uses | Add Overlay |
+|-------------|-------------|
+| 🟢 Node.js / npm | `npm-node` |
+| 🐍 Python / pip | `python-pip` |
+| ☕ Java / Maven | `java-maven-gradle` |
+| 🐳 Docker | `container-images` |
 
-### Example 1: Basic Node.js web application
+---
 
-```
-skills/foundational/oss-selection-baseline.skills.md
-+ skills/overlays/capabilities/agent-can-install-packages.skills.md
-+ skills/overlays/ecosystems/npm-node.skills.md
-```
+### Step 4: Add Artifact Type Overlays 🔧
 
-### Example 2: Python data science prototype
+Add for specialized dependency types:
 
-```
-skills/foundational/oss-selection-baseline.skills.md
-+ skills/overlays/capabilities/agent-can-install-packages.skills.md
-+ skills/overlays/ecosystems/python-pip.skills.md
-+ skills/overlays/contexts/prototype-low-risk.skills.md
-```
+| Uses | Add Overlay |
+|------|-------------|
+| ⚙️ CI/CD Actions | `ci-actions-build-tools` |
+| 🔍 Scanners/Security Tools | `scanners-security-tools` |
+| 🔗 MCP Servers | `mcp-servers-connectors` |
 
-### Example 3: Production microservice with CI/CD
+---
 
-```
-skills/foundational/oss-selection-strict.skills.md
-+ skills/overlays/capabilities/agent-can-install-packages.skills.md
-+ skills/overlays/capabilities/agent-can-open-pr.skills.md
-+ skills/overlays/ecosystems/python-pip.skills.md
-+ skills/overlays/ecosystems/container-images.skills.md
-+ skills/overlays/artifact-types/ci-actions-build-tools.skills.md
-+ skills/overlays/contexts/production.skills.md
-```
+### Step 5: Add Context Overlay 🎚️
 
-### Example 4: Regulated environment with high autonomy agent
+Choose **one** based on risk profile:
 
-```
-skills/foundational/oss-selection-strict.skills.md
-+ skills/overlays/capabilities/agent-can-install-packages.skills.md
-+ skills/overlays/capabilities/agent-can-run-shell.skills.md
-+ skills/overlays/capabilities/agent-can-use-tools-or-mcp.skills.md
-+ skills/overlays/capabilities/agent-can-open-pr.skills.md
-+ skills/overlays/ecosystems/java-maven-gradle.skills.md
-+ skills/overlays/artifact-types/scanners-security-tools.skills.md
-+ skills/overlays/contexts/regulated-sensitive.skills.md
+| Context | When to Use | File |
+|---------|------------|------|
+| 🧪 **Prototype** | POCs, learning, hackathons, experiments | `prototype-low-risk` |
+| 🏗️ **Production** | Live apps, customer-facing, revenue-generating | `production` |
+| 🔒 **Regulated** | Healthcare, finance, government, compliance | `regulated-sensitive` |
+
+---
+
+## 💡 Real-World Examples
+
+### Example 1: Simple Web App 🌐
+
+**Scenario:** Personal portfolio with React
+
+```bash
+cat skills/foundational/oss-selection-baseline.skills.md \
+    skills/overlays/capabilities/agent-can-install-packages.skills.md \
+    skills/overlays/ecosystems/npm-node.skills.md \
+    > .clinerules/oss-guardrails.md
 ```
 
-## Using packaged combinations
+---
 
-If you don't want to combine files manually, use pre-packaged combinations:
+### Example 2: Production Microservice 🚀
 
-- `packaged/baseline-general.skills.md` - General purpose baseline
-- `packaged/strict-agent-high-autonomy.skills.md` - For highly autonomous agents
-- `packaged/python-sensitive-repo.skills.md` - Python in sensitive environments
-- `packaged/npm-high-autonomy.skills.md` - Node.js with autonomous agent
+**Scenario:** FastAPI backend, Docker, CI/CD, production traffic
 
-## How to apply these files
+```bash
+cat skills/foundational/oss-selection-strict.skills.md \
+    skills/overlays/capabilities/agent-can-install-packages.skills.md \
+    skills/overlays/capabilities/agent-can-open-pr.skills.md \
+    skills/overlays/ecosystems/python-pip.skills.md \
+    skills/overlays/ecosystems/container-images.skills.md \
+    skills/overlays/artifact-types/ci-actions-build-tools.skills.md \
+    skills/overlays/contexts/production.skills.md \
+    > .clinerules/oss-guardrails.md
 
-Most AI agents and coding assistants support a `skills.md` or similar configuration file. Common approaches:
+# Or use pre-packaged
+cp packaged/python-sensitive-repo.skills.md .clinerules/oss-guardrails.md
+```
 
-1. **Project-level**: Place the combined content in `.clinerules/`, `.cursorrules`, or a similar project configuration file
-2. **Agent configuration**: Add the content to your agent's system prompt or instructions
-3. **Multiple files**: Some systems support including multiple skill files - use the overlay structure directly
+---
 
-## When to update
+### Example 3: High-Autonomy Agent 🤖
 
-Review and update your skills configuration when:
+**Scenario:** Agent with broad permissions
 
-- Agent capabilities change (new permissions or tools)
-- Project risk profile changes (moving to production)
-- New dependency types are introduced (adding containers, CI/CD)
-- Supply chain incidents occur (update guidance based on lessons learned)
-- Ecosystem best practices evolve
+```bash
+cat skills/foundational/oss-selection-strict.skills.md \
+    skills/overlays/capabilities/agent-can-install-packages.skills.md \
+    skills/overlays/capabilities/agent-can-run-shell.skills.md \
+    skills/overlays/capabilities/agent-can-use-tools-or-mcp.skills.md \
+    skills/overlays/ecosystems/npm-node.skills.md \
+    skills/overlays/artifact-types/mcp-servers-connectors.skills.md \
+    > .clinerules/oss-guardrails.md
 
-## Need help?
+# Or use pre-packaged
+cp packaged/strict-agent-high-autonomy.skills.md .clinerules/oss-guardrails.md
+```
 
-If you're unsure which combination to use, start with the **baseline-general** packaged file and adjust based on observed agent behavior and your team's risk tolerance.
+---
+
+### Example 4: Healthcare Compliance 🏥
+
+**Scenario:** HIPAA-compliant Java system
+
+```bash
+cat skills/foundational/oss-selection-strict.skills.md \
+    skills/overlays/capabilities/agent-can-install-packages.skills.md \
+    skills/overlays/ecosystems/java-maven-gradle.skills.md \
+    skills/overlays/artifact-types/scanners-security-tools.skills.md \
+    skills/overlays/contexts/regulated-sensitive.skills.md \
+    > .clinerules/oss-guardrails.md
+```
+
+---
+
+## 📦 Pre-Packaged Combinations
+
+| Package | Best For |
+|---------|----------|
+| 🎯 **baseline-general** | Most common use case |
+| 🔒 **strict-agent-high-autonomy** | Powerful agents needing constraints |
+| 🐍 **python-sensitive-repo** | Python production projects |
+| 🟢 **npm-high-autonomy** | Node.js with autonomous agent |
+
+**Usage:**
+```bash
+cp packaged/[package-name].skills.md .clinerules/oss-guardrails.md
+```
+
+---
+
+## 🔧 How to Apply
+
+### Project-Level (Recommended)
+
+```bash
+.clinerules/oss-guardrails.md           # Cline/Roo
+.cursorrules                            # Cursor
+.aider.conf.yml                         # Aider
+.github/copilot-instructions.md         # GitHub Copilot
+```
+
+### Global (All Projects)
+
+```bash
+~/Documents/Cline/Rules/oss-guardrails.md    # Cline
+~/.cursor/rules/oss-guardrails.md            # Cursor
+```
+
+---
+
+## 📊 Decision Matrix
+
+|  | Prototype | Internal | Production | Regulated |
+|---|:-:|:-:|:-:|:-:|
+| **Foundation** | Baseline | Baseline | **Strict** | **Strict** |
+| **Ecosystem** | ✓ | ✓ | ✓ | ✓ |
+| **Capabilities** | ✓ | ✓ | ✓ | ✓ |
+| **Artifact Types** | Optional | Optional | ✓ | ✓ |
+| **Context** | prototype | (none) | production | regulated |
+
+---
+
+## ⏰ When to Update
+
+| Trigger | Action |
+|---------|--------|
+| 🚀 Moving to production | Upgrade baseline → strict |
+| 🤖 Agent capabilities change | Add/remove capability overlays |
+| 🆕 New dependency types | Add artifact type overlays |
+| 🚨 Supply chain incident | Review and strengthen |
+| 📈 Project risk increases | Add stricter context |
+
+---
+
+## 🆘 Still Need Help?
+
+**Start simple:**
+```bash
+packaged/baseline-general.skills.md
+```
+
+Observe for a week, then adjust based on agent behavior and your risk tolerance.
+
+---
+
+<div align="center">
+
+**Start simple, observe, iterate. Add more guardrails later!** 🛡️
+
+[⬆ Back to Main README](../README.md)
+
+</div>

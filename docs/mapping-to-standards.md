@@ -1,200 +1,249 @@
-# Mapping to Standards
+# 📊 Mapping to Standards
 
-This document maps the agent OSS guardrails to established standards, frameworks, and best practices in software supply chain security.
+> How Agent OSS Guardrails align with established security frameworks
 
-## OWASP
+---
 
-### OWASP Top 10 CI/CD Security Risks
+## Overview
 
-These guardrails align with several OWASP CI/CD security risks:
+These guardrails are a **practical implementation layer** that translates high-level security standards into agent-consumable instructions. They complement (not replace) established frameworks.
+
+---
+
+## 🏆 SLSA (Supply-chain Levels for Software Artifacts)
+
+### Alignment by Level
+
+| SLSA Level | How Guardrails Help |
+|-----------|---------------------|
+| **Build L1** | Discourage dynamic downloads lacking provenance; prefer official sources |
+| **Build L2** | Pin CI action versions for reproducible builds; avoid unverified publishers |
+| **Build L3** | Strict version pinning; avoid dynamic resolution; minimize dependencies |
+| **Build L4** | Make changes reviewable; document rationale; separate commits |
+
+**Example:**
+```yaml
+# ❌ Unpinned (violates reproducibility)
+- uses: actions/checkout@main
+
+# ✅ Pinned to commit SHA (SLSA L2+)
+- uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+```
+
+**Reference:** [SLSA Framework](https://slsa.dev/)
+
+---
+
+## 🔒 OWASP
+
+### Top 10 CI/CD Security Risks
 
 **CICD-SEC-4: Poisoned Pipeline Execution (PPE)**
-- Guardrails discourage unverified CI actions and build tools
-- Pin versions for CI dependencies
-- Review privileged tooling before introduction
+- **Guardrails:** Discourage unverified CI actions, pin versions, review privileged tooling
+- **Overlay:** `ci-actions-build-tools.skills.md`
 
 **CICD-SEC-6: Insufficient Credential Hygiene**
-- Treat MCP servers and connectors as privileged dependencies
-- Review tool permissions and access scope
-- Discourage broad-access tools
+- **Guardrails:** Treat MCP servers as privileged; review tool permissions/access scope
+- **Overlays:** `mcp-servers-connectors.skills.md`, `agent-can-use-tools-or-mcp.skills.md`
 
-**CICD-SEC-8: Ungoverned Usage of 3rd Party Services**
-- Prefer official registries and publishers
-- Review external tools and connectors
-- Ensure visibility of third-party integrations
+**CICD-SEC-8: Ungoverned 3rd Party Services**
+- **Guardrails:** Prefer official registries, review external tools, ensure visibility
+- **Overlays:** All capability and artifact-type overlays
 
-### OWASP Dependency-Check and OWASP DependencyTrack
+### Complementing OWASP Tools
 
-These guardrails complement SCA tools by:
-- Reducing the likelihood of introducing problematic dependencies
-- Encouraging version pinning for consistent scanning
-- Ensuring dependencies remain discoverable for analysis
+| OWASP Tool | Guardrail Role |
+|-----------|----------------|
+| **Dependency-Check** | Prevent problematic deps upfront |
+| **DependencyTrack** | Ensure discoverability for tracking |
 
-## SLSA (Supply-chain Levels for Software Artifacts)
+**Together:** Guardrails reduce tool noise; tools catch what slips through.
 
-### SLSA Framework Alignment
+**Reference:** [OWASP Top 10 CI/CD Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
 
-**Build Level 1: Provenance**
-- Discourage dynamic downloads that lack provenance
-- Prefer official sources with verifiable origins
-- Encourage lockfiles that capture dependency provenance
+---
 
-**Build Level 2: Hosted Build**
-- Pin CI action versions for reproducible builds
-- Avoid unverified publishers in build pipelines
-- Encourage predictable build behavior
+## 🛡️ NIST Secure Software Development Framework (SSDF)
 
-**Build Level 3: Hardened Build**
-- Strict version pinning
-- Avoid dynamic dependency resolution
-- Minimize dependencies to reduce supply chain complexity
+| SSDF Practice | Guardrail Implementation |
+|--------------|-------------------------|
+| **PO.3:** Ensure third-party software is secure | Review dependencies; prefer maintained projects; scrutinize tools |
+| **PS.1:** Protect from unauthorized access | Review MCP/scanner permissions; discourage broad-access tools |
+| **PS.3:** Review and analyze code | Make changes reviewable; ensure discoverability for scanning |
+| **PW.1:** Design to meet security requirements | Minimize dependencies; adapt guardrails to risk context |
 
-## SBOM (Software Bill of Materials)
+**Reference:** [NIST SSDF](https://csrc.nist.gov/Projects/ssdf)
 
-### Supporting SBOM Practices
+---
 
-These guardrails support SBOM generation and accuracy by:
+## 📋 SBOM (Software Bill of Materials)
 
-**Ensuring visibility**: All dependencies should be in manifests and lockfiles, making SBOM generation complete and accurate
+### Supporting SBOM Generation
 
-**Discouraging hidden dependencies**: Runtime downloads and dynamic imports are discouraged, preventing SBOM gaps
+| SBOM Need | How Guardrails Help |
+|-----------|---------------------|
+| **Completeness** | All deps in manifests; no hidden dependencies |
+| **Accuracy** | Version pinning ensures SBOM reflects actual code |
+| **Discoverability** | Standard formats; avoid git URLs |
+| **Transitive deps** | Lockfiles capture full tree; no runtime downloads |
 
-**Version specificity**: Pinned versions ensure SBOM accuracy
+**Example:**
+```javascript
+// ❌ SBOM-hostile
+{
+  "dependencies": {
+    "tool": "git+https://github.com/user/repo.git",
+    "lib": "latest"
+  },
+  "postinstall": "curl https://cdn.com/setup.sh | bash"
+}
 
-**Discouraging bypasses**: Avoiding git URLs and direct downloads keeps dependencies in standard formats
+// ✅ SBOM-friendly
+{
+  "dependencies": {
+    "tool": "2.1.3",
+    "lib": "1.0.0"
+  }
+}
+```
 
-## NIST Secure Software Development Framework (SSDF)
+**Reference:** [NTIA SBOM Minimum Elements](https://www.ntia.gov/report/2021/minimum-elements-software-bill-materials-sbom)
 
-### SSDF Practice Alignment
+---
 
-**PO.3: Ensure that third-party software is sufficiently secure**
-- Review third-party dependencies before adoption
-- Prefer well-maintained projects
-- Apply scrutiny to tools and plugins
+## 🔍 CIS Controls
 
-**PS.1: Protect all forms of code from unauthorized access**
-- Review permissions of MCP servers, scanners, and tools
-- Discourage broad-access connectors
+**Control 2: Software Asset Inventory**
+- Ensure deps in manifests; discourage hidden dependencies; promote lockfiles
 
-**PS.3: Review and/or analyze code to identify vulnerabilities**
-- Make dependency changes reviewable
-- Ensure dependencies are discoverable for scanning
-- Support SCA tool effectiveness
+**Control 16: Application Software Security**
+- Encourage maintained deps; discourage package manager bypasses; support vulnerability management
 
-**PW.1: Design software to meet security requirements and mitigate security risks**
-- Minimize dependencies to reduce attack surface
-- Apply different guardrail levels based on risk context
+**Reference:** [CIS Controls v8](https://www.cisecurity.org/controls/v8)
 
-## CIS Controls
+---
 
-### CIS Control 2: Inventory and Control of Software Assets
+## 🌐 ISO/IEC Standards
 
-These guardrails support software inventory by:
-- Ensuring dependencies are recorded in standard manifests
-- Discouraging hidden or dynamic dependencies
-- Promoting lockfile usage for complete inventories
+**ISO/IEC 27001: Information Security Management**
+- A.14.2.1: Secure development policy implementation
+- A.14.2.5: Secure engineering principles (minimal deps, secure defaults)
 
-### CIS Control 16: Application Software Security
+**ISO/IEC 27034: Application Security**
+- Guardrails as part of Organizational Normative Framework (ONF)
+- Specific controls for dependency management
 
-These guardrails support secure development by:
-- Encouraging selection of maintained, secure dependencies
-- Discouraging bypasses of package manager security features
-- Supporting vulnerability management through version pinning
+**Reference:** [ISO/IEC 27001](https://www.iso.org/isoiec-27001-information-security.html)
 
-## Software Composition Analysis (SCA)
+---
 
-### Complementing SCA Tools
+## 🇪🇺 EU Cyber Resilience Act (CRA)
 
-These guardrails work alongside SCA tools:
+| CRA Principle | Guardrail Support |
+|--------------|-------------------|
+| **Supply chain security** | Due diligence in dependency selection |
+| **Vulnerability handling** | Version pinning enables rapid updates |
+| **Security requirements** | Different overlay levels for varied risks |
+| **Documentation** | Reviewable changes create audit trail |
+
+**Reference:** [EU Cyber Resilience Act](https://digital-strategy.ec.europa.eu/en/policies/cyber-resilience-act)
 
-**Before SCA**: Reduce the likelihood of introducing problematic dependencies
+---
 
-**During SCA**: Ensure dependencies are visible and scannable
+## 🔧 Integration with Security Tools
 
-**After SCA**: Make it easier to address findings through clear dependency provenance
+| Tool Type | Examples | Guardrail Role |
+|-----------|----------|---------------|
+| **SCA** | Snyk, Dependabot | Reduce noise; ensure visibility |
+| **SAST** | SonarQube, Checkmarx | Minimize code via dependency reduction |
+| **SBOM** | Syft, CycloneDX | Ensure completeness via manifest discipline |
+| **Policy** | OPA, Kyverno | Agent-level enforcement complementing policy |
+| **Secrets** | GitGuardian, TruffleHog | Reduce risk via tool permission review |
 
-Popular SCA tools include:
-- Snyk
-- Dependabot
-- WhiteSource/Mend
-- Black Duck
-- OWASP Dependency-Check
+**The Stack:**
+```
+POLICY ENGINES (OPA) → Organizational policies
+        ↓
+AGENT GUARDRAILS → Prevent bad choices
+        ↓
+SCA / SBOM / SAST → Detection & cataloging
+        ↓
+HUMAN REVIEW → Final checkpoint
+```
 
-These guardrails do not replace SCA but make it more effective by:
-- Reducing noise from unnecessary dependencies
-- Ensuring complete visibility
-- Supporting remediation through version pinning
+---
 
-## License Compliance
+## 📈 Measuring Alignment
 
-### Supporting License Management
+**Supply Chain Health Metrics:**
+- % deps with exact version pins
+- % deps from verified publishers
+- Average dependency age (last commit)
+- Hidden/dynamic dependencies (should be 0)
 
-**SPDX (Software Package Data Exchange)**: Guardrails encourage manifest-based dependencies that support SPDX SBOM generation
+**Process Compliance:**
+- % dep changes with documentation
+- % high-risk changes flagged
+- Time between dependency updates
 
-**ClearlyDefined**: Preferring official packages from known publishers improves license clarity
+**Tool Effectiveness:**
+- SBOM completeness scores
+- SCA false positive rate (should decrease)
+- Vulnerability response time
 
-**License scanning**: Discouraging hidden dependencies ensures license scanners see all components
+---
 
-**Regulated contexts**: The regulated-sensitive overlay encourages avoiding unclear licensing
+## 🎯 Compliance Summary
 
-## ISO/IEC Standards
+| Standard | Primary Alignment | Key Overlays |
+|----------|------------------|--------------|
+| **SLSA** | Build levels 1-3 | All |
+| **OWASP** | CI/CD risks | `ci-actions`, `scanners` |
+| **NIST SSDF** | PO.3, PS.1, PS.3, PW.1 | Foundational + contexts |
+| **SBOM** | Completeness | All |
+| **CIS** | Controls 2, 16 | Foundational |
+| **ISO 27001** | A.14.2.x | All |
+| **CRA** | Secure-by-design | `regulated-sensitive` |
 
-### ISO/IEC 27001: Information Security Management
+---
 
-**A.14.2.1 Secure development policy**: These guardrails provide practical agent-consumable implementation of secure development practices
+## 🚀 Next Steps
 
-**A.14.2.5 Secure system engineering principles**: Minimal dependencies and secure defaults align with secure engineering
+**For Compliance Teams:**
+1. Map requirements to standards
+2. Select overlays supporting compliance
+3. Document alignment
+4. Track metrics
+5. Iterate as standards evolve
 
-### ISO/IEC 27034: Application Security
+**For Security Teams:**
+1. Integrate with existing tools
+2. Define metrics
+3. Review effectiveness
+4. Share learnings
 
-**Organizational Normative Framework (ONF)**: These skills files can be part of an organization's application security framework
+**For Development Teams:**
+1. Understand applicable standards
+2. Apply appropriate level
+3. Monitor agent behavior
+4. Provide feedback
 
-**Application Security Controls**: Guardrails implement specific controls for dependency management
+---
 
-## EU Cyber Resilience Act (CRA)
+## 📚 Additional Resources
 
-The proposed CRA emphasizes secure-by-design principles:
+- [SLSA Specification](https://slsa.dev/spec/v1.0/)
+- [OWASP SCVS](https://owasp.org/www-project-software-component-verification-standard/)
+- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
+- [CISA Software Security](https://www.cisa.gov/topics/cybersecurity-best-practices/software-security)
+- [OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/)
 
-**Supply chain security**: These guardrails help organizations demonstrate due diligence in dependency selection
+---
 
-**Vulnerability handling**: Version pinning and maintained dependencies support vulnerability management obligations
+<div align="center">
 
-**Security requirements**: Different overlay levels support varied risk contexts
+**These guardrails implement standards practically for AI agents** 🛡️
 
-## Industry Best Practices
+[⬆ Back to Main README](../README.md)
 
-### Google's "Know, Prevent, Fix" Framework
-
-**Know**: Ensure dependencies are discoverable and inventoried
-
-**Prevent**: Reduce introduction of problematic dependencies upfront
-
-**Fix**: Enable rapid response through version pinning and manifest clarity
-
-### Microsoft's Security Development Lifecycle (SDL)
-
-**Secure by design**: Minimal dependencies reduce attack surface
-
-**Secure by default**: Baseline guardrails provide secure defaults
-
-**Secure in deployment**: Version pinning and reproducibility support secure deployment
-
-### CNCF Supply Chain Security Best Practices
-
-**Use minimal base images**: Container overlay encourages minimal images
-
-**Pin versions**: Discourage `latest` tags
-
-**Verify provenance**: Prefer official images with clear provenance
-
-## Conclusion
-
-These agent OSS guardrails complement, rather than replace, existing standards and tools. They provide a practical, agent-consumable implementation layer that:
-
-✓ Aligns with established frameworks
-✓ Supports automated tooling (SCA, SBOM)
-✓ Implements secure-by-design principles
-✓ Adapts to different risk contexts
-✓ Remains practical for agent interpretation
-
-By translating high-level standards into specific agent behaviors, these guardrails help bridge the gap between security policy and day-to-day development with AI assistance.
+</div>

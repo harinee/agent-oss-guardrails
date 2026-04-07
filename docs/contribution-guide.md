@@ -1,244 +1,296 @@
-# Contribution Guide
+# 🤝 Contribution Guide
 
-Thank you for considering contributing to Agent OSS Guardrails! This guide will help you create contributions that align with the project's goals and design principles.
+> Help make AI-assisted development safer for everyone
 
-## Before contributing
+---
 
-1. **Review existing files**: Check if similar guidance already exists
-2. **Read design principles**: Understand the project's [design principles](design-principles.md)
-3. **Check the issue tracker**: See if someone else is working on something similar
-4. **Open a discussion**: For significant changes, open an issue first to discuss the approach
+## 🚀 Quick Start
 
-## Types of contributions
+1. ⭐ Star the repository
+2. 🍴 Fork the repository
+3. 📖 Read [Design Principles](design-principles.md) and [Why This Exists](why-this-exists.md)
+4. 💬 Check existing issues
+5. 🗣️ Open a discussion for significant changes
 
-### New overlay files
+---
 
-Create new overlay files when:
-- You've identified a new capability, ecosystem, artifact type, or context not yet covered
-- You have ecosystem-specific guidance that doesn't fit existing files
-- You need to address a specific risk scenario
+## 🎯 Ways to Contribute
 
-### Updates to existing files
+| Contribution | Impact |
+|--------------|--------|
+| 📝 Fix typos/improve clarity | High - Better docs help everyone |
+| 🐛 Report issues or gaps | High - Identifies blind spots |
+| 💡 Share real-world experiences | High - Validates/improves guidance |
+| 🆕 Add ecosystem overlays | High - Expands coverage |
+| 🔧 Create new overlay types | Very High - New capabilities |
+| 📊 Add examples/case studies | High - Helps users apply guardrails |
+| 🧪 Test with different agents | High - Validates effectiveness |
 
-Update existing files when:
-- You've found more effective phrasing for agent consumption
-- You've identified missing scenarios in an existing overlay
-- You need to clarify ambiguous guidance
-- You're incorporating lessons from supply chain incidents
+---
 
-### New packaged combinations
+## 📋 Types of Contributions
 
-Create new packaged combinations when:
-- You've identified a common use case not covered by existing packages
-- You have a well-tested combination that others might benefit from
+### 1. New Overlay Files 🆕
 
-### Documentation improvements
+**When to create:**
+- Coverage gaps for capabilities, ecosystems, artifact types, or contexts
+- Ecosystem-specific guidance not in existing files
+- Addressing specific risk scenarios from real experience
 
-Improve documentation when:
-- You've found unclear or missing guidance
-- You can provide better examples
-- You can clarify decision trees or mappings
+**Examples needed:**
+- 🦀 Rust / Cargo
+- 💎 Ruby / Bundler
+- 🔷 Go / Go modules
+- 🌐 .NET / NuGet
+- 🗄️ Database tools/ORMs
 
-## File naming conventions
+---
 
-Follow these naming conventions:
+### 2. Updates to Existing Files ✏️
 
-**Overlay files**: `{descriptive-name}.skills.md`
-- Use lowercase with hyphens
-- Be specific but concise
-- Examples: `npm-node.skills.md`, `production.skills.md`
+**When to update:**
+- More effective phrasing for agents
+- Missing scenarios in existing overlays
+- Clarifying ambiguous guidance
+- Incorporating lessons from incidents
+- Agent behavior shows unclear guidance
 
-**Packaged files**: `{use-case}.skills.md`
-- Describe the target use case
-- Examples: `python-sensitive-repo.skills.md`
+---
 
-## Writing skills instructions
+### 3. New Packaged Combinations 📦
 
-### Principles for writing
+**When to create:**
+- Common use case not covered
+- Well-tested combination others benefit from
+- Organizational stack used repeatedly
 
-1. **Be concise**: Agents process instructions more reliably when they're clear and brief
-2. **Be explicit**: Avoid ambiguity - specify exactly what behavior you want
-3. **Be actionable**: Provide guidance the agent can act on
-4. **Be generic**: Avoid company-specific or vendor-specific references
-5. **Be modular**: Each instruction should work independently and compose well
+**Examples:** Go microservices, Ruby on Rails + CI/CD, Full-stack TypeScript, ML pipelines.
 
-### Format guidelines
+---
 
-Use this structure for skills files:
+### 4. Documentation Improvements 📖
+
+**High-impact contributions:**
+- Real-world case studies
+- Before/after examples
+- Common pitfalls and solutions
+- Integration guides for specific agents
+
+---
+
+## 📝 Writing Guidelines
+
+### File Naming
+
+```bash
+✅ Good:
+- npm-node.skills.md
+- production.skills.md
+- rust-cargo.skills.md
+
+❌ Avoid:
+- npm.md (missing .skills.md)
+- Node-NPM.skills.md (use lowercase)
+- node_npm.skills.md (use hyphens)
+```
+
+---
+
+### Content Structure
 
 ```markdown
 # {File Name}
 
-{Brief description of what this overlay addresses}
+> {Brief one-line description}
 
 ## When to use this
 
-{1-2 sentences describing when to include this overlay}
+{1-2 sentences}
 
 ## Instructions
 
-### {Category 1}
-
-- instruction one
-- instruction two
-- instruction three
-
-### {Category 2}
-
+### {Category}
 - instruction one
 - instruction two
 
 ## Risk signals
 
-If the agent encounters these signals, it should:
 - signal one → action
 - signal two → action
+
+## Examples
+
+### ✅ Good patterns
+### ❌ Patterns to avoid
 ```
-
-### Language style
-
-**DO**:
-- Use imperative voice: "prefer maintained packages"
-- Be specific: "pin to specific versions" not "use good versions"
-- Provide clear constraints: "avoid packages with no commits in 12+ months"
-
-**DON'T**:
-- Use passive voice: "packages should be maintained"
-- Be vague: "use secure dependencies"
-- Use judgmental language: "never", "always", "must" (unless truly absolute)
-- Reference specific companies or products
-
-### Examples
-
-**Good**:
-```markdown
-- prefer packages with commits in the last 3 months
-- avoid packages from unverified publishers
-- pin to specific semantic versions (e.g., 1.2.3 not ^1.2.0)
-```
-
-**Not ideal**:
-```markdown
-- use maintained packages
-- be careful with dependencies
-- always use the latest version
-```
-
-## What variable does your file address?
-
-Each overlay file should address ONE primary variable:
-
-| Category | Variable |
-|----------|----------|
-| Capabilities | What the agent can do (install, execute, open PRs) |
-| Ecosystems | Language/package manager context |
-| Artifact types | Type of dependency (CI action, scanner, MCP server) |
-| Contexts | Risk level (prototype, production, regulated) |
-
-If your file addresses multiple variables, consider splitting it into multiple overlays.
-
-## Avoiding duplication
-
-Before creating new guidance:
-
-1. **Check foundational files**: Is this guidance already in baseline or strict?
-2. **Check existing overlays**: Does another overlay already address this?
-3. **Consider composition**: Can existing files be combined instead?
-
-If you find duplication:
-- Contribute by refactoring to remove it
-- Move common guidance to foundational files
-- Keep overlays focused on the delta they provide
-
-## Testing your contribution
-
-Before submitting:
-
-1. **Test with an agent**: Use your skills file with a real AI agent and observe behavior
-2. **Check for conflicts**: Ensure your guidance doesn't contradict other files
-3. **Verify composition**: Test your overlay combined with baseline and other overlays
-4. **Document use cases**: Note which scenarios benefit from your guidance
-
-## Submitting contributions
-
-### Pull request process
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b add-rust-ecosystem-overlay`
-3. **Make your changes**: Follow the guidelines in this document
-4. **Test thoroughly**: Ensure your changes work as intended
-5. **Commit with clear messages**: Use conventional commit format
-6. **Open a pull request**: Provide a clear description of your changes
-
-### Pull request template
-
-Include in your PR description:
-
-```markdown
-## What does this change?
-
-{Brief description}
-
-## What variable does it address?
-
-{Capability / Ecosystem / Artifact type / Context}
-
-## Why is this needed?
-
-{Use case or gap it fills}
-
-## How was this tested?
-
-{Agent used, scenarios tested, observed behavior}
-
-## Does it duplicate existing guidance?
-
-{Yes/No - if yes, explain why it's necessary}
-
-## Related issues
-
-{Link to relevant issues or discussions}
-```
-
-### Review process
-
-Contributions will be reviewed for:
-- Alignment with design principles
-- Clarity for agent consumption
-- Absence of duplication
-- Generic applicability
-- Proper formatting
-
-## Contribution ideas
-
-Looking for ways to contribute? Consider:
-
-- **New ecosystem overlays**: Rust, Go, Ruby, PHP, .NET
-- **New artifact types**: Database tools, monitoring agents, deployment tools
-- **Regional considerations**: Specific guidance for different regulatory regions
-- **Incident response**: Update guidance based on recent supply chain incidents
-- **Agent feedback**: Improve phrasing based on observed agent behavior
-- **Examples**: More real-world usage examples
-- **Testing**: Tools or scripts to validate skills files
-
-## Code of conduct
-
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Assume good intent
-- Help newcomers
-- Keep discussions professional
-
-## Questions?
-
-- Open an issue for questions about contributing
-- Use discussions for broader topics
-- Tag maintainers for urgent security-related matters
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the same MIT License that covers the project.
 
 ---
 
-Thank you for helping make AI-assisted development safer! 🛡️
+### Language and Style
+
+**✅ DO:**
+- Use imperative voice: "prefer maintained packages"
+- Be specific: "pin to 1.2.3 not ^1.2.0"
+- Provide clear constraints: "avoid latest tags in production"
+
+**❌ DON'T:**
+- Passive voice: "packages should be maintained"
+- Vague guidance: "use secure dependencies"
+- Absolute without reason: "never use version ranges"
+- Vendor-specific: "use Snyk to scan"
+
+---
+
+### One Variable Per File
+
+| Category | Variable | Examples |
+|----------|----------|----------|
+| **Capabilities** | What agent can do | `agent-can-install-packages` |
+| **Ecosystems** | Language/package manager | `npm-node`, `python-pip` |
+| **Artifact Types** | Type of dependency | `ci-actions-build-tools` |
+| **Contexts** | Risk level/environment | `production`, `regulated-sensitive` |
+
+**If your file addresses multiple variables, split it.**
+
+---
+
+## 🧪 Testing Your Contribution
+
+### Before Submitting
+
+1. **Test with a real agent** (Cline, Cursor, Copilot, Aider)
+2. **Observe:** Does the agent follow guidance? Clear instructions? Prevents risky patterns?
+3. **Check conflicts:** Contradictions with existing files? Duplication?
+4. **Verify completeness:** Main scenarios covered? Clear examples?
+
+---
+
+## 🔄 Contribution Process
+
+### 1. Fork and Branch
+
+```bash
+git clone https://github.com/YOUR-USERNAME/agent-oss-guardrails.git
+cd agent-oss-guardrails
+git checkout -b add-rust-ecosystem-overlay
+```
+
+### 2. Make Focused Changes
+
+- ✅ One overlay per PR
+- ✅ One improvement type per PR
+- ✅ Logical, complete changes
+
+### 3. Test Thoroughly
+
+Test with at least one AI agent and document results in PR.
+
+### 4. Commit with Clear Messages
+
+```bash
+git commit -m "feat: add Rust/Cargo ecosystem overlay"
+git commit -m "docs: improve how-to-choose examples"
+git commit -m "fix: clarify version pinning in npm overlay"
+```
+
+### 5. Open Pull Request
+
+**Use this template:**
+
+```markdown
+## What does this change?
+{Brief description}
+
+## What variable/category?
+{Capability / Ecosystem / Artifact type / Context / Documentation}
+
+## Why is this needed?
+{Use case, gap, or problem}
+
+## How was this tested?
+**Agent used:** {Cline, Cursor, etc.}
+**Scenarios tested:** {description}
+**Observed behavior:** {what happened}
+
+## Checklist
+- [ ] Follows naming conventions
+- [ ] Matches content structure
+- [ ] Appropriate language/style
+- [ ] Tested with AI agent
+- [ ] No conflicts
+- [ ] Docs updated if needed
+```
+
+---
+
+## 🎯 What We're Looking For
+
+**High-value contributions:**
+1. Ecosystem overlays (Rust, Go, Ruby, .NET, PHP)
+2. Real-world validation and case studies
+3. Agent-specific insights and phrasing improvements
+4. Regional/regulatory guidance (GDPR, industry-specific)
+
+**We generally won't accept:**
+- ❌ Vendor-specific guidance
+- ❌ Promotional content
+- ❌ Untested contributions
+- ❌ Overly complex/verbose guidance
+- ❌ Duplicate overlays without differentiation
+
+---
+
+## 📊 Review Process
+
+**Reviewers check:**
+1. Alignment with design principles
+2. Clarity for agents
+3. No duplication
+4. Generic applicability
+5. Proper formatting
+6. Evidence of testing
+
+**Timeline:**
+- Simple fixes: 1-3 days
+- New overlays: 1-2 weeks
+- Significant changes: 2-4 weeks
+
+---
+
+## 💬 Getting Help
+
+- 💡 General questions → [Discussions](https://github.com/harinee/agent-oss-guardrails/discussions)
+- 🐛 Bugs → [Issues](https://github.com/harinee/agent-oss-guardrails/issues)
+- 🤔 Unsure about contribution → Open Issue first
+
+---
+
+## 🌟 Recognition
+
+Contributors are listed in contributors list, credited in release notes, and help the entire community!
+
+Significant contributors may be invited as maintainers.
+
+---
+
+## 📜 Code of Conduct
+
+**Standards:** Be respectful, welcome newcomers, constructive feedback, assume good intent.
+
+**Not acceptable:** Harassment, discrimination, trolling, personal attacks, spam.
+
+---
+
+## 🎁 License
+
+By contributing, your work is licensed under the **MIT License**.
+
+---
+
+<div align="center">
+
+**Ready to contribute? We can't wait to see what you build!** 🚀
+
+[⬆ Back to Main README](../README.md)
+
+</div>

@@ -1,177 +1,201 @@
-# Design Principles
+# 🧭 Design Principles
 
-These principles guide the creation and maintenance of agent OSS guardrails.
+> The 15 core principles guiding safe, practical agent guardrails
 
-## Core principles
+---
 
-### 1. Prefer minimal dependencies
+## Our Philosophy
 
-**Why**: Every dependency is a potential attack surface and maintenance burden.
+Every guardrail balances **security with practicality**. These principles adapt to your project's needs—they're guidelines, not absolutes.
 
-**Guidance**:
-- Only add dependencies that provide clear value
-- Avoid adding frameworks for simple tasks
-- Avoid adding libraries for functionality already present
-- Prefer standard library solutions when practical
+---
 
-### 2. Prefer well-maintained projects
+## The 15 Core Principles
 
-**Why**: Maintained projects are more likely to receive security updates and bug fixes.
+### 1. 📦 Prefer Minimal Dependencies
 
-**Guidance**:
-- Prefer projects with recent commits
-- Prefer projects with responsive maintainers
-- Prefer projects with active issue triage
-- Avoid projects that appear abandoned
+**Why:** Every dependency is a potential attack surface and maintenance burden.
 
-### 3. Prefer official sources
+**In practice:**
+- Only add dependencies with clear, significant value
+- Avoid frameworks when simple libraries suffice
+- Prefer standard library when practical
 
-**Why**: Official packages and registries reduce the risk of malicious code.
+**Example:** Use native `[...new Set(array)]` instead of importing Lodash for one function.
 
-**Guidance**:
-- Use official package registries (npm, PyPI, Maven Central)
-- Prefer official libraries from framework authors
-- Avoid unofficial mirrors or forks unless necessary
-- Verify publisher identity when possible
+---
 
-### 4. Pin versions
+### 2. 🏆 Prefer Well-Maintained Projects
 
-**Why**: Unpinned versions can introduce unexpected changes and vulnerabilities.
+**Why:** Active maintenance signals ongoing security care and faster patches.
 
-**Guidance**:
-- Pin to specific versions, not ranges
-- Avoid `latest` tags in containers
-- Avoid `*` or `^` in package manifests where precision matters
-- Update dependencies intentionally, not automatically
+**Signals:** Recent commits (last 3-6 months), responsive maintainers, active issue triage, security disclosure process.
 
-### 5. Avoid unnecessary frameworks
+---
 
-**Why**: Frameworks introduce significant code, complexity, and update burden.
+### 3. 🏢 Prefer Official Sources
 
-**Guidance**:
-- Use lightweight libraries for simple tasks
-- Avoid heavy frameworks for single features
-- Consider if existing frameworks can be extended
-- Evaluate alternatives before adding a framework
+**Why:** Official registries have vetting processes that reduce malicious code risk.
 
-### 6. Avoid hidden dependencies
+**In practice:** Use npm, PyPI, Maven Central; prefer official libraries from framework authors; avoid unofficial mirrors.
 
-**Why**: Hidden dependencies bypass auditing and visibility.
+**Red flags:** Typo-similar names, unverified authors, unofficial "helper" packages.
 
-**Guidance**:
-- Keep all dependencies in manifests
-- Avoid dynamic runtime downloads
-- Avoid install scripts that fetch additional code
-- Ensure lockfiles are updated
+---
 
-### 7. Avoid dynamic code downloads
+### 4. 📌 Pin Versions
 
-**Why**: Runtime code fetching bypasses review and scanning.
+**Why:** Unpinned versions can introduce unexpected or malicious updates.
 
-**Guidance**:
-- Avoid `curl | bash` patterns
-- Avoid dynamic imports from URLs
-- Avoid eval or exec of fetched code
-- Prefer static dependencies
+**Examples:**
+- ❌ `express: "*"` or `FROM node:latest`
+- ✅ `express: "4.18.2"` or `FROM node:18.17.0`
 
-### 8. Avoid unverified publishers
+---
 
-**Why**: Unknown publishers may be malicious or compromised.
+### 5. 🎯 Avoid Unnecessary Frameworks
 
-**Guidance**:
-- Check publisher reputation
-- Verify maintainer identity where possible
-- Be cautious of new packages from unknown publishers
-- Prefer packages with verified publishers
+**Why:** Frameworks introduce significant code, complexity, and update obligations.
 
-### 9. Prefer discoverable dependencies
+**Decision tree:** Can I use standard library? → Can I extend existing framework? → Is a small library enough? → Only then consider full framework.
 
-**Why**: All dependencies should be visible for auditing.
+---
 
-**Guidance**:
-- Record dependencies in standard manifests
-- Ensure lockfiles reflect all transitive dependencies
-- Avoid bypassing package manager conventions
-- Document non-standard dependency sources
+### 6. 👁️ Avoid Hidden Dependencies
 
-### 10. Do not bypass lockfiles
+**Why:** Hidden dependencies bypass auditing, scanning, and SBOM generation.
 
-**Why**: Lockfiles ensure reproducible builds and capture transitive dependencies.
+**Patterns to avoid:**
+- Install scripts that fetch code
+- Runtime downloads
+- Git URLs or direct URLs in dependencies
 
-**Guidance**:
-- Never delete lockfiles to resolve issues
-- Update lockfiles when dependencies change
-- Commit lockfiles to version control
-- Use lockfile validation in CI
+---
 
-### 11. Make changes reviewable
+### 7. 🚫 Avoid Dynamic Code Downloads
 
-**Why**: Review catches issues that automated tools miss.
+**Why:** Runtime fetching bypasses all security controls.
 
-**Guidance**:
-- Provide clear explanations for dependency additions
-- Keep dependency changes in separate commits or PRs
-- Flag high-impact changes explicitly
-- Document rationale for unusual dependencies
+**Never suggest:** `curl | bash`, dynamic imports from URLs, `eval(fetch(...))`.
 
-### 12. Treat tools as dependencies
+---
 
-**Why**: Development tools have the same risks as runtime dependencies.
+### 8. 🔍 Avoid Unverified Publishers
 
-**Guidance**:
-- Apply the same scrutiny to dev dependencies
-- Pin tool versions
-- Review tool permissions and access
-- Document tool selection rationale
+**Why:** Unknown publishers may be malicious or lack security expertise.
 
-### 13. Treat plugins as dependencies
+**Check:** Publisher reputation, maintainer identity, package adoption, community feedback.
 
-**Why**: Plugins often have elevated access to code and secrets.
+---
 
-**Guidance**:
-- Apply dependency scrutiny to editor plugins
-- Apply dependency scrutiny to browser extensions
-- Review plugin permissions
-- Prefer minimal-access plugins
+### 9. 📋 Prefer Discoverable Dependencies
 
-### 14. Treat MCP servers as dependencies
+**Why:** Visibility enables auditing, scanning, and compliance.
 
-**Why**: MCP servers and connectors can access code, execute commands, and handle secrets.
+**Standard locations:** `package.json`, `requirements.txt`, `pom.xml`, `Dockerfile`.
 
-**Guidance**:
-- Evaluate MCP server publishers
-- Review MCP server permissions
-- Pin MCP server versions
-- Avoid unnecessary connectors
+---
 
-### 15. Prefer predictable supply chain behavior
+### 10. 🔒 Do Not Bypass Lockfiles
 
-**Why**: Unpredictability makes it harder to audit and secure the supply chain.
+**Why:** Lockfiles ensure reproducibility and capture transitive dependencies.
 
-**Guidance**:
-- Avoid auto-updates
-- Avoid dynamic version resolution at runtime
-- Prefer deterministic builds
-- Test dependency updates before deploying
+**Never:** Delete lockfiles to fix conflicts. **Always:** Update them properly with package manager commands.
 
-## Applying these principles
+---
 
-These principles inform the specific guidance in:
-- Foundational skills files (baseline and strict)
-- Capability overlays (what the agent can do)
-- Ecosystem overlays (language-specific guidance)
-- Artifact type overlays (CI, scanners, MCP servers)
-- Context overlays (production, regulated, prototype)
+### 11. 👀 Make Changes Reviewable
 
-When contributing new skills files, ensure they align with these principles while remaining practical for agent consumption.
+**Why:** Human review catches what automation misses.
 
-## Balancing pragmatism
+**Good practice:** Clear explanations, separate commits for dependencies, document rationale, flag high-impact changes.
 
-These principles are not absolute rules. There are valid exceptions:
+---
 
-- **Prototypes** may need faster iteration with relaxed constraints
-- **Experimentation** may require testing new or unproven packages
-- **Specialized needs** may require niche or single-maintainer packages
-- **Legacy systems** may have dependencies that no longer meet current standards
+### 12. 🔧 Treat Tools as Dependencies
 
-The overlay system allows projects to adjust guardrails based on context while maintaining a clear baseline.
+**Why:** Dev tools carry the same supply chain risks.
+
+**Apply same scrutiny to:** Linters, formatters, build tools, test frameworks, CLI utilities.
+
+---
+
+### 13. 🔌 Treat Plugins as Dependencies
+
+**Why:** Editor plugins and browser extensions can access your entire codebase and secrets.
+
+**High-risk permissions:** File system access, network access, clipboard, execute commands, environment variables.
+
+---
+
+### 14. 🔗 Treat MCP Servers as Dependencies
+
+**Why:** MCP servers can access code, execute commands, and handle secrets.
+
+**Evaluate:** Publisher reputation, permissions/capabilities, version pinning, necessity.
+
+---
+
+### 15. 🎯 Prefer Predictable Supply Chain Behavior
+
+**Why:** Unpredictability makes auditing and securing harder.
+
+**Prioritize:** Deterministic builds, version pinning, no auto-updates, test before deploying.
+
+---
+
+## 🎨 Applying These Principles
+
+### In Foundational Files
+**Baseline** and **Strict** encode these at different strictness levels.
+
+### In Overlay Files
+Each overlay applies principles to specific contexts:
+- **Capability overlays:** What the agent can do
+- **Ecosystem overlays:** Language-specific guidance
+- **Artifact type overlays:** CI/CD, scanners, MCP
+- **Context overlays:** Production, regulated, prototype
+
+---
+
+## ⚖️ Balancing Pragmatism
+
+**Valid exceptions exist:**
+
+| Context | Flexibility |
+|---------|------------|
+| 🧪 Prototypes | Faster iteration, relaxed constraints |
+| 🔬 Experimentation | Testing unproven packages allowed |
+| 🎯 Specialized needs | Niche packages may be necessary |
+| 🏛️ Legacy systems | Existing deps may not meet standards |
+
+The overlay system lets you adapt while maintaining clear baselines.
+
+---
+
+## 🔄 Principles in Practice
+
+**When adding a dependency, check:**
+
+1. ✅ Do I really need this? (Minimal)
+2. ✅ Recent commits? Active issues? (Well-maintained)
+3. ✅ Official registry? Verified publisher? (Official)
+4. ✅ Exact version specified? (Pinned)
+5. ✅ Is a library enough? (Not a framework)
+6. ✅ In manifest and lockfile? (Discoverable)
+7. ✅ Static dependency? (Not dynamic)
+8. ✅ Known maintainer? (Verified publisher)
+9. ✅ Clear documentation? (Reviewable)
+
+**All pass ✅ → Add it**  
+**Any fail ⚠️ → Reconsider or document exception**
+
+---
+
+<div align="center">
+
+**These principles create a foundation for safer AI-assisted development** 🛡️
+
+[⬆ Back to Main README](../README.md)
+
+</div>
